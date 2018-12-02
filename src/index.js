@@ -7,44 +7,40 @@ import Counter from './Counter';
 import * as serviceWorker from './serviceWorker';
 
 const reducer = (state = { counters: [] }, action) => {
-  const newState = { ...state };
-  console.log(newState);
 
   console.log(action);
   switch (action.type) {
     case "ADD_COUNTER":
-      newState.counters.push({ index: newState.counters.length, value: 0 });
-      return newState;
+      return { counters: state.counters.concat({ index: state.counters.length, value: 0 }) };
     case "REMOVE_COUNTER":
-      if (newState.counters.length) {
-        return newState.counters.splice(newState.counters.length - 1, 1);
+      if (state.counters.length) {
+        return { counters: state.counters.slice(0, state.counters.length - 2) };
       } else {
-        return newState;
+        return state;
       }
     case "INCREMENT_COUNTER":
-      console.log(newState.counters);
-      newState.counters[action.index].value += 1;
-      return newState;
+      console.log()
+      return { counters: [...state.counters.slice(0, action.index), { index: action.index, value: state.counters[action.index].value + 1 }, ...state.counters.slice(action.index + 1)] };
     case "DECREMENT_COUNTER":
-      newState.counters[action.index].value -= 1;
-      return newState;
+      return { counters: [...state.counters.slice(0, action.index), { index: action.index, value: state.counters[action.index].value - 1 }, ...state.counters.slice(action.index + 1)] };
     default:
-      return newState;
+      return state;
   }
 }
 
 const store = createStore(reducer);
 
-const props = {
-  addCounter: () => store.dispatch({ type: "ADD_COUNTER" }),
-  removeCounter: () => store.dispatch({ type: "REMOVE_COUNTER" }),
-  data: store.getState(),
-  incrementCounter: (value) => store.dispatch({ type: "INCREMENT_COUNTER", index: value }),
-  decrementCounter: (value) => store.dispatch({ type: "DECREMENT_COUNTER", index: value }),
-}
 
 const render = () => {
   console.log(store.getState());
+  const props = {
+    addCounter: () => store.dispatch({ type: "ADD_COUNTER" }),
+    removeCounter: () => store.dispatch({ type: "REMOVE_COUNTER" }),
+    data: store.getState(),
+    incrementCounter: (value) => store.dispatch({ type: "INCREMENT_COUNTER", index: value }),
+    decrementCounter: (value) => store.dispatch({ type: "DECREMENT_COUNTER", index: value }),
+  }
+  // console.log(props);
   ReactDOM.render(<Counter {...props} />, document.getElementById('root'));
 }
 
